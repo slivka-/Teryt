@@ -28,29 +28,29 @@ public class CountryHitsCounter
                 public void startElement(String uri, String localName, 
                         String qName, Attributes attributes) throws SAXException
                 {
-                    if(qName.equalsIgnoreCase("NAZWA_1"))
+                    if (qName.equalsIgnoreCase("NAZWA_1"))
                         inNazwa = true;
                 }
                 @Override
                 public void characters(char[] ch, int start, int length) 
                         throws SAXException
                 {
-                    if(inNazwa)
-                        if(new String(ch,start,length).contains(streetName))
+                    if (inNazwa)
+                        if (new String(ch,start,length).contains(streetName))
                            hitCounter++; 
                 }
                 @Override
                 public void endElement(String uri, 
                         String localName, String qName) throws SAXException
                 {
-                    if(qName.equalsIgnoreCase("NAZWA_1"))
+                    if (qName.equalsIgnoreCase("NAZWA_1"))
                         inNazwa = false;
                 }               
             };
             
             saxParser.parse(DataLoader.getULICStream(), handler);
         }
-        catch(IOException | ParserConfigurationException | SAXException ex)
+        catch (IOException | ParserConfigurationException | SAXException ex)
         {
             System.out.println(ex);
         }

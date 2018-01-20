@@ -14,15 +14,15 @@ public class WojHitsCounter
     private int hitCounter = 0;
     private String wojCode = "";
     
-    public int countWojXMLHits(String streetName, String wojCodeOrNum)
+    public int countWojXMLHits (String streetName, String wojCodeOrNum)
     {
         hitCounter = 0;
         
         wojCode = "";
-        if(CanParseInt(wojCodeOrNum))
+        if (CanParseInt(wojCodeOrNum))
             wojCode = wojCodeOrNum;
         else
-            wojCode = "";//SEARCH FOR WOJ IN TERC
+            wojCode = new WojIdResolver().resolveId(wojCodeOrNum);
         
         try
         {
@@ -35,22 +35,22 @@ public class WojHitsCounter
                 boolean inWoj = false;
                 boolean isWojOk = false;
                 @Override
-                public void startElement(String uri, String localName, 
+                public void startElement (String uri, String localName, 
                         String qName, Attributes attributes) throws SAXException
                 {
-                    if(qName.equalsIgnoreCase("WOJ"))
+                    if (qName.equalsIgnoreCase("WOJ"))
                         inWoj = true;
-                    if(qName.equalsIgnoreCase("NAZWA_1"))
+                    if (qName.equalsIgnoreCase("NAZWA_1"))
                         inNazwa = true;
                 }
                 @Override
                 public void characters(char[] ch, int start, int length) 
                         throws SAXException
                 {
-                    if(inWoj)
+                    if (inWoj)
                         if(new String(ch,start,length).equals(wojCode))
                             isWojOk = true;
-                    if(isWojOk && inNazwa)
+                    if (isWojOk && inNazwa)
                         if(new String(ch,start,length).contains(streetName))
                            hitCounter++; 
                 }
@@ -58,18 +58,18 @@ public class WojHitsCounter
                 public void endElement(String uri, String localName, 
                         String qName) throws SAXException
                 {
-                    if(qName.equalsIgnoreCase("WOJ"))
+                    if (qName.equalsIgnoreCase("WOJ"))
                         inWoj = false;
-                    if(qName.equalsIgnoreCase("NAZWA_1"))
+                    if (qName.equalsIgnoreCase("NAZWA_1"))
                         inNazwa = false;
-                    if(qName.equalsIgnoreCase("row"))
+                    if (qName.equalsIgnoreCase("row"))
                         isWojOk = false;
                 }               
             };
             
-            saxParser.parse(DataLoader.getULICStream(), handler);
+            saxParser.parse (DataLoader.getULICStream(), handler);
         }
-        catch(IOException | ParserConfigurationException | SAXException ex)
+        catch (IOException | ParserConfigurationException | SAXException ex)
         {
             System.out.println(ex);
         }
@@ -83,7 +83,7 @@ public class WojHitsCounter
             Integer.parseInt(toParse);
             return true;
         }
-        catch(NumberFormatException ex)
+        catch (NumberFormatException ex)
         {
             return false;
         }

@@ -31,16 +31,16 @@ public class DataLoader
             URL zipUrl = new URL(path);
             ZipInputStream zipStream = new ZipInputStream(zipUrl.openStream());
             ZipEntry entry;
-            while((entry = zipStream.getNextEntry()) != null)
+            while ((entry = zipStream.getNextEntry()) != null)
             {
-                if(entry.getName().endsWith(".xml"))
+                if (entry.getName().endsWith(".xml"))
                 {
                     return zipStream;
                 }
             }
             return null;
         }
-        catch(IOException ex)
+        catch (IOException ex)
         {
             System.out.println(ex);
             return null;

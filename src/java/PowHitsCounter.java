@@ -13,15 +13,16 @@ public class PowHitsCounter
     private int hitCounter = 0;
     private String wojCode = "";
     
-    public int countPowXMLHits(String streetName, String wojCodeOrNum, String powCode)
+    public int countPowXMLHits(String streetName, String wojCodeOrNum, 
+            String powCode)
     {
         hitCounter = 0;
         
         wojCode = "";
-        if(CanParseInt(wojCodeOrNum))
+        if (CanParseInt(wojCodeOrNum))
             wojCode = wojCodeOrNum;
         else
-            wojCode = "";//SEARCH FOR WOJ IN TERC
+            wojCode = new WojIdResolver().resolveId(wojCodeOrNum);
         
         try
         {
@@ -51,13 +52,13 @@ public class PowHitsCounter
                 public void characters(char[] ch, int start, int length) 
                         throws SAXException
                 {
-                    if(inWoj)
+                    if (inWoj)
                         if(new String(ch,start,length).equals(wojCode))
                             isWojOk = true;
-                    if(isWojOk && inPow)
+                    if (isWojOk && inPow)
                         if(new String(ch,start,length).equals(powCode))
                             isPowOk = true;
-                    if(isWojOk && isPowOk && inNazwa)
+                    if (isWojOk && isPowOk && inNazwa)
                         if(new String(ch,start,length).contains(streetName))
                            hitCounter++; 
                 }
@@ -79,7 +80,7 @@ public class PowHitsCounter
                 }               
             };
             
-            saxParser.parse(DataLoader.getULICStream(), handler);
+            saxParser.parse (DataLoader.getULICStream(), handler);
         }
         catch(IOException | ParserConfigurationException | SAXException ex)
         {
@@ -88,14 +89,14 @@ public class PowHitsCounter
         return hitCounter;
     }
     
-    private boolean CanParseInt(String toParse)
+    private boolean CanParseInt (String toParse)
     {
         try
         {
             Integer.parseInt(toParse);
             return true;
         }
-        catch(NumberFormatException ex)
+        catch (NumberFormatException ex)
         {
             return false;
         }
