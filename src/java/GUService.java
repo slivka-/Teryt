@@ -8,32 +8,40 @@ import javax.ws.rs.core.Response;
 import java.net.URLDecoder;
 
 /**
+ * Resr web service, provides street search functionality in different socpes
  * @author Michał Śliwa
  */
 @Path("/pl")
 public class GUService
 {
-    @GET
-    @Path("/test")
-    @Produces(MediaType.TEXT_PLAIN)
-    public Response test()
-    {
-        return Response.ok().entity("Hello World!").build();
-    }
-    
+    /**
+     * Search for given street name in whole country
+     * @param streetName
+     * @return
+     * @throws UnsupportedEncodingException 
+     */
     @GET
     @Path("/{streetName}")
     @Produces(MediaType.TEXT_PLAIN)
     public Response getFromCountry(@PathParam("streetName") String streetName) 
             throws UnsupportedEncodingException
     {
+        //Decode URL string in UTF-8 formatting
         String decodedName = URLDecoder.decode(streetName,"UTF-8");
+        //return number of hits in whole country
         return Response.ok()
                        .entity(new CountryHitsCounter()
                                     .countCountryXMLHits(decodedName))
                        .build();
     }
     
+    /**
+     * Search for given street name in given voivodeship or county
+     * @param wojPowCode
+     * @param streetName
+     * @return
+     * @throws UnsupportedEncodingException 
+     */
     @GET
     @Path("/{WojPowCode}/{streetName}")
     @Produces(MediaType.TEXT_PLAIN)
@@ -41,17 +49,20 @@ public class GUService
             @PathParam("streetName") String streetName) 
             throws UnsupportedEncodingException
     {
+        //Decode URL string in UTF-8 formatting
         String decodedName = URLDecoder.decode(streetName,"UTF-8");
         
         switch (wojPowCode.length())
         {
             case 2:
             case 5:
+                //if WojPowCode is 2 or 5 character long, search in voivodeship
                 return Response.ok()
                         .entity(new WojHitsCounter()
                                 .countWojXMLHits(decodedName, wojPowCode))
                         .build();
             case 4:
+                //if WojPowCode is 4 character long, search in county
                 return Response.ok()
                         .entity(new PowHitsCounter()
                                 .countPowXMLHits(decodedName, 
@@ -59,6 +70,7 @@ public class GUService
                                         wojPowCode.substring(2)))
                         .build();
             case 7:
+                //if WojPowCode is 7 character long, search in county
                 return Response.ok()
                         .entity(new PowHitsCounter()
                                 .countPowXMLHits(decodedName, 
@@ -70,6 +82,14 @@ public class GUService
         }
     }
     
+    /**
+     * Search for given street name in given county
+     * @param wojCode
+     * @param powCode
+     * @param streetName
+     * @return
+     * @throws UnsupportedEncodingException 
+     */
     @GET
     @Path("/{WojCode}/{PowCode}/{streetName}")
     @Produces(MediaType.TEXT_PLAIN)
@@ -78,7 +98,9 @@ public class GUService
             @PathParam("streetName") String streetName) 
             throws UnsupportedEncodingException
     {
+        //Decode URL string in UTF-8 formatting
         String decodedName = URLDecoder.decode(streetName,"UTF-8");
+        //return number of hits in county
         return Response.ok()
                        .entity(new PowHitsCounter()
                                .countPowXMLHits(decodedName, wojCode, powCode))
